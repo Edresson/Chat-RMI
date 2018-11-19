@@ -11,6 +11,8 @@ Used libraries:
 	- tkinter
 	- Pyro4
 
+run using: python3.7 client.py
+
 Pyro4 and tkinter might not come with your python version, depending on the operation system and/or python distribution.
 
 The program consists in 4 files:

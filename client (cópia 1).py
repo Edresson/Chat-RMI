@@ -2,7 +2,6 @@ import user
 import json
 import socket as sk
 
-
 def get_uris(server, port):
 	'''Função que se conecta ao servidor \"dns\" de uri
 	e descobre quais são os chats existentes'''
@@ -39,13 +38,12 @@ def main(server='localhost', port=25500):
 
 		try:
 			uri = uris[int(selection)][1]
-			print(uri)
 			break
 		except (IndexError, ValueError):
 			print(f"'{selection}' is not a valid chat, please, try again.")
 
 	#A representação do usuário conectada ao bate-papo é instanciada
-	u = user.User(uri, username,server,port)
+	u = user.User(uri, username)
 	
 if __name__ == '__main__':
 	main()
