@@ -149,7 +149,19 @@ class User():
 	def incoming_message(self, message):
 		#Recieving a message -> displaying at window.
 		self.ui.chatlist.addItem(message)
-
+		msgsplit = message.split('<-')
+		if len(msgsplit) > 1:
+			print(msgsplit)
+			if msgsplit[1] ==' entrou no grupo.':
+				self.ui.listconectados.addItem(msgsplit[0])
+			elif  msgsplit[1] ==' disconectou-se do grupo.':
+				itemName= msgsplit[0].split('<-')[1]
+				items_list = self.ui.listconectados.findItems(itemName,QtCore.Qt.MatchExactly)
+				for item in items_list:
+					r = self.ui.listconectados.row(item)
+					self.ui.listconectados.takeItem(r)
+					
+			
 	def __eq__(self, other):
 		return self.username == other.username
 
@@ -187,8 +199,8 @@ class User():
 
 	def voltar_page(self):
 		self.ui.stackedWidget.setCurrentIndex(2) # return for login
+	
 	def login(self):
-		
 		sock = connect_tcp(self.server, self.port)
 		usuario,senha=self.get_login_information()
 		msg = 'login:'+usuario+':'+senha
@@ -239,7 +251,9 @@ class User():
 			self.ui.stackedWidget.setCurrentIndex(2) # return for login
 		elif comando == 'nok':
 			self.ui.label_warning_create.setText("Esse Usuario já existe faça login !")
+	
 	def logout(self):
+		self.ui.stackedWidget.setCurrentIndex(2) # return for login
 		try:
 			self.disconnect()
 		except:
@@ -248,7 +262,7 @@ class User():
 		del self.daemon
 		del self.chat
 		del self._my_uri
-		self.ui.stackedWidget.setCurrentIndex(2) # return for login
+		
 
 if __name__ == '__main__':
 	User()

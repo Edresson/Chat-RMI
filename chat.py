@@ -19,9 +19,9 @@ class Chat():
 		if uri in self.users or client.username in self.usernames:
 			return False
 
-		print(f"O cliente '{client.username}' entrou no grupo.")
+		print(f"O cliente '{client.username}'<- entrou no grupo.")
 
-		self._send_message(f'{client.username} entrou no grupo.')
+		self._send_message(f'{client.username}<- entrou no grupo.')
 
 		#adding client to chat's users
 		self.users[uri] = client
@@ -33,9 +33,9 @@ class Chat():
 
 	def disconnect(self, uri):
 		"""Method for remote uses to call when wants to disconnect from this chat."""
-		print(f"{self.users[uri].username} Disconectou-se")
-		self._send_message(f"O usuario '{self.users[uri].username}' disconectou-se do grupo.", uri)
-
+		print(f"{self.users[uri].username}, disconectou-se")
+		self._send_message(f"O usuario ->'{self.users[uri].username}'<- disconectou-se do grupo.", uri)
+	
 		#clearing the data:
 		self.usernames.remove(self.users[uri].username)
 		del(self.users[uri])
