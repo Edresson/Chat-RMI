@@ -151,13 +151,19 @@ class User():
 		self.ui.chatlist.addItem(message)
 		msgsplit = message.split('<-')
 		if len(msgsplit) > 1:
-			print(msgsplit)
+			print(str(msgsplit[1]),' disconectou-se do grupo.', str(msgsplit[1]) ==' disconectou-se do grupo.')
 			if msgsplit[1] ==' entrou no grupo.':
-				self.ui.listconectados.addItem(msgsplit[0])
-			elif  msgsplit[1] ==' disconectou-se do grupo.':
-				itemName= msgsplit[0].split('<-')[1]
+				item = msgsplit[0]
+				items_list = self.ui.listconectados.findItems(item,QtCore.Qt.MatchExactly)
+				if len(items_list) == 0:
+					self.ui.listconectados.addItem(item)
+			
+			elif  str(msgsplit[1]) ==' disconectou-se do grupo.':
+				itemName= msgsplit[0].split('->')[1]
+				
 				items_list = self.ui.listconectados.findItems(itemName,QtCore.Qt.MatchExactly)
 				for item in items_list:
+					print('removido',item)
 					r = self.ui.listconectados.row(item)
 					self.ui.listconectados.takeItem(r)
 					

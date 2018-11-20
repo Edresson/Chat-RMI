@@ -34,7 +34,7 @@ class Chat():
 	def disconnect(self, uri):
 		"""Method for remote uses to call when wants to disconnect from this chat."""
 		print(f"{self.users[uri].username}, disconectou-se")
-		self._send_message(f"O usuario ->'{self.users[uri].username}'<- disconectou-se do grupo.", uri)
+		self._send_message(f"O usuario ->{self.users[uri].username}<- disconectou-se do grupo.", uri)
 	
 		#clearing the data:
 		self.usernames.remove(self.users[uri].username)
