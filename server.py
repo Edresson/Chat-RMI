@@ -4,6 +4,21 @@ import time
 import Pyro4
 import threading
 import socket as sk
+import pickle
+
+try:
+    with open('Usuarios.list', 'rb') as fp:
+        Usuarios = pickle.load(fp)
+except:
+    Usuarios = [] 
+    with open('Usuarios.list', 'wb') as fp:
+        pickle.dump(Usuarios,fp)
+
+def saveusers():
+    global Usuarios
+    with open('Usuarios.list', 'wb') as fp:
+        pickle.dump(Usuarios,fp)
+
 
 class Lobby():
 	def __init__(self, hostname='localhost', port=25501):
@@ -56,18 +71,45 @@ class Server():
 		self.s_thread.start()
 
 	def _run(self):
+		global Usuarios
 		print("Running server")
 		self._server.listen()
 
 		while True:
-			con, cliente = self._server.accept()
+			con, _ = self._server.accept()
 			mensagem = con.recv(2048).decode('utf-8')
 
 			if mensagem == 'GET uri':
 				con.send(json.dumps(self.lobby.chats).encode())
-
+			elif mensagem[:11] =='createuser:':
+				usersenha=mensagem.replace('createuser:','')
+				user,_=usersenha.split(':')
+				userexiste = False
+				print(Usuarios)
+				for i in Usuarios:
+					print(i[:len(user)], user)
+					if i[:len(user)]== user:
+						userexiste = True
+				if userexiste:
+					con.send('nok'.encode('utf-8'))
+				else:
+					Usuarios.append(usersenha)
+					saveusers()
+					con.send('ok'.encode('utf-8'))
+				
+			elif mensagem[:6] =='login:':
+				usersenha=mensagem.replace('login:','')
+				usersenha = usersenha
+				existe = False
+				for i in Usuarios:
+					print(i,usersenha)
+					if i == usersenha:
+						existe = True
+				if existe:
+					con.send('ok'.encode('utf-8'))
+				else:
+					con.send('nok'.encode('utf-8'))
 			con.close()
-
 	def create_chat(self, chat_name):
 		self.lobby.register(chat_name)
 
