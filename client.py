@@ -9,6 +9,10 @@ import socket as sk
 import json
 import hashlib 
 import sys
+import os 
+
+Download_dir = os.path.join(os.getcwd(),os.path.join('Downloads',''))
+
 def get_uris(server, port):
 	'''Função que se conecta ao servidor \"dns\" de uri
 	e descobre quais são os chats existentes'''
@@ -79,29 +83,14 @@ class User():
 	
 	def createprivatechat(self):
 		user=str(self.ui.listconectados.currentItem().text())
-		#print(user)
-		#print(self.ui.listconectados.currentRow()) # get index
 		self.createchat('_'+self.username+'_'+user,user)
 
 	def createchat(self,chatname,user):
 		sock = connect_tcp(self.server, self.port)
 		msg = 'createchat:'+chatname
 		sock.send(msg.encode('utf-8'))
-		#chatname='_1_'
 		self.chat.send_message("O Usuario,"+user+',convidou você para um chat privado, ->'+chatname+'<- Click aqui para ir.', self.my_uri)
 		self.changegroup(chatname)
-		'''self.disconnect()
-		self.daemon.unregister(self)
-		del self.daemon
-		del self.chat
-		del self._my_uri
-		self.chat = Pyro4.Proxy(uri)
-		#self.chat = Pyro4.Proxy(uri)
-		#Creating daemon so the chat can access this object.
-		self.daemon = Pyro4.Daemon()
-		#try:
-		self._my_uri = self.daemon.register(self)
-		self.connect()'''
 
 
 	def changegroup(self, value):
@@ -113,13 +102,9 @@ class User():
 		#self.ui.grupos.clear()
 		
 		selection = 0
-		print('URIS no changegroup:',uris)
 		for i in range(len(uris)):
-				#print(uris[i])
 				if uris[i][0] == value:
 					selection = i
-				#self.ui.grupos.addItem(uris[i][0])
-		print('Selecionado e nome:',selection,uris[int(selection)][0])
 		uri = uris[int(selection)][1]
 		print('Uri',uri)
 		print('chamou')
@@ -128,10 +113,8 @@ class User():
 		del self.chat
 		del self._my_uri
 		self.chat = Pyro4.Proxy(uri)
-		#self.chat = Pyro4.Proxy(uri)
 		#Creating daemon so the chat can access this object.
 		self.daemon = Pyro4.Daemon()
-		#try:
 		self._my_uri = self.daemon.register(self)
 		self.connect()
 		print("combobox changed", value)
@@ -182,10 +165,9 @@ class User():
 	def incoming_message(self, message):
 		#Recieving a message -> displaying at window.
 		print('mensagem recebida',message)
-		if message.find('####################__&&&&&&&&&&&&&&&1111212!@1,') == -1:
-			self.ui.chatlist.addItem(message)
-			msgsplit = message.split('<-')
-			if len(msgsplit) > 1:
+		self.ui.chatlist.addItem(message)
+		msgsplit = message.split('<-')
+		if len(msgsplit) > 1:
 					if msgsplit[1] ==' entrou no grupo.':
 						item = msgsplit[0]
 						items_list = self.ui.listconectados.findItems(item,QtCore.Qt.MatchExactly)
@@ -199,13 +181,6 @@ class User():
 						for item in items_list:
 							r = self.ui.listconectados.row(item)
 							self.ui.listconectados.takeItem(r)
-		else:
-			print('chegou mensagem')
-			msg = message.replace('####################__&&&&&&&&&&&&&&&1111212!@1,','')
-			user, chatname = msg.split(',')
-			print(user , self.username)
-			if user == self.username:
-				self.changegroup(chatname)
 
 
 			
@@ -261,7 +236,7 @@ class User():
 			self.chat = Pyro4.Proxy(uris[0][1])#set initial uri for default
 			self.ui.grupos.clear()
 			for line in uris:
-					#if line[0].find('_') == -1:
+				if line[0].find('_') == -1:
 					self.ui.grupos.addItem(line[0])
 
 			self.ui.stackedWidget.setCurrentIndex(0)
@@ -297,6 +272,7 @@ class User():
 		comando= sock.recv(1024).decode('utf-8')
 		comando = comando.replace('\r\n\r\n','')
 		if comando == 'ok':
+			os.mkdir(os.path.join(Download_dir,usuario))
 			self.ui.stackedWidget.setCurrentIndex(2) # return for login
 		elif comando == 'nok':
 			self.ui.label_warning_create.setText("Esse Usuario já existe faça login !")
