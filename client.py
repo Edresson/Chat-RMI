@@ -10,8 +10,13 @@ import json
 import hashlib 
 import sys
 import os 
+import time
+from utils import *
+from PyQt5.QtWidgets import QFileDialog
 
 Download_dir = os.path.join(os.getcwd(),os.path.join('Downloads',''))
+
+    
 
 def get_uris(server, port):
 	'''Função que se conecta ao servidor \"dns\" de uri
@@ -62,12 +67,15 @@ class User():
 		self.ui.Registrar.clicked.connect(self.registrar) # botao de registro
 		self.ui.bt_logout.clicked.connect(self.logout)
 		self.ui.bt_voltar.clicked.connect(self.voltar_page)
+		self.ui.enviararquivo.clicked.connect(self.enviar_arquivo)
+
 		self.ui.linesend.returnPressed.connect(self.send_message)
 		self.ui.listconectados.currentItemChanged.connect(self.createprivatechat)
 		self.ui.chatlist.currentItemChanged.connect(self.acaoclickchat)
 		MainWindow.show()
 		sys.exit(app.exec_())
 
+	
 	def acaoclickchat(self):
 		try:
 			msg = str(self.ui.chatlist.currentItem().text())
@@ -80,6 +88,13 @@ class User():
 				chat = msg.split('->')[1]
 				chat = chat.split('<-')[0]
 				self.changegroup(chat)
+			elif splits[0] == 'O Usuario'and splits[2] =='Enviou o arquivo':
+				arquivo = msg.split('->')[1]
+				arquivo = arquivo.split('<-')[0]
+				usuario = splits[1]
+				self.SolicitarDownload(os.path.join(usuario,arquivo))
+				#self.chat.send_message("O Usuario,"+self.username+',Enviou o arquivo, ->'+os.path.join(self.username,os.path.basename(file)) +'<- Click aqui para baixar.', self.my_uri)
+
 	
 	def createprivatechat(self):
 		user=str(self.ui.listconectados.currentItem().text())
@@ -288,6 +303,84 @@ class User():
 		del self.chat
 		del self._my_uri
 		
+	'''Funções para transferência de arquivos'''
+	def enviar_arquivo(self):
+		file =  str(QFileDialog.getOpenFileName(None, 'Selecione o arquivo',os.getcwd())[0]) # seleceção do diretorio
+		self.EnviarArquivo(file)
+		self.chat.send_message("O Usuario,"+self.username+',Enviou o arquivo, ->'+os.path.basename(file) +'<- Click aqui para baixar.', self.my_uri)
+
+
+	@threaded
+	def EnviarArquivo(self,arquivo):
+    
+		print('Enviar arquivo: ', arquivo)
+		
+		#Bytes in Test File
+		numBytesFile = determine_num_bytes(os.path.abspath(arquivo))
+
+		#Opening the test file
+		testFileObj = open_text_file(os.path.abspath(arquivo))
+
+		#Connecting to the server
+		sock = sk.socket(sk.AF_INET, sk.SOCK_STREAM)
+		sock.connect((self.server, self.port))
+		#arquivopath = arquivo.replace(DIRECTORY_TO_WATCH,'')#usado para poder upar pastas
+		arquivopath=os.path.join(self.username,os.path.basename(arquivo))  
+		print('arquivopath') 
+		#Read the text file to the socket
+		read_text_file(sock, testFileObj, numBytesFile,arquivopath)
+
+		#serverResponse = sock.recv(1024)
+		#print "Server received <" + str(serverResponse) + "> bytes."
+		#Closing the test file
+		testFileObj.close()
+		print('Acabou de enviar:', arquivo)
+		#Close the socket
+		sock.close()
+
+	@threaded
+	def SolicitarDownload(self,filename):
+		print('Fazendo Download:',filename)
+		#Connecting to the server
+		connectionSocket = sk.socket(sk.AF_INET, sk.SOCK_STREAM)
+		connectionSocket.connect((self.server, self.port))
+		#print(filename)
+		mensagem = 'download:'+self.username+':'+filename
+		connectionSocket.send( mensagem.encode('utf-8') )
+		_= connectionSocket.recv(1024)
+		connectionSocket.send('ok'.encode('utf-8') )
+		filename=filename.replace( os.path.join(self.username,''),'')
+		filename= os.path.join(Download_dir,filename)
+		#print('Filename: ', filename)
+		if not os.path.exists(os.path.dirname(filename)):
+					try:
+						os.makedirs(os.path.dirname(filename))
+					except OSError as exc: # Guard against race condition
+						pass
+		file = open(filename, "w+")
+		#get the first line of the file
+		clientInput = connectionSocket.recv(1024).decode('utf-8')
+		bytesReceived = 0
+
+		#for each line the client sends, add it to the transf
+		while clientInput != "\r\n\r\n" and clientInput != "":
+			bytesReceived += len(clientInput)
+			file.write(clientInput)
+			clientInput = connectionSocket.recv(1024).decode('utf-8')
+				
+
+		if(clientInput == "" or clientInput == "\r\n\r\n"):
+			#needs to have the double \\ to cancel out interpreting it as a string 
+			connectionSocket.sendall(str(bytesReceived).encode('utf-8'))
+			file.close()
+			connectionSocket.close()
+			
+		time.sleep(1)
+		print('Download Acabou: ', filename) 
+		if os.name == 'nt':
+			os.system('explorer '+ os.path.dirname(filename))
+		else:
+			os.system('thunar '+ os.path.dirname(filename))
 
 if __name__ == '__main__':
 	User()

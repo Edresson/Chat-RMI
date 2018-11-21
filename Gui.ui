@@ -362,6 +362,19 @@ color: rgb(230, 230, 230);</string>
        <string>       Login</string>
       </property>
      </widget>
+     <widget class="QPushButton" name="enviararquivo">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>270</y>
+        <width>111</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Enviar Arquivo</string>
+      </property>
+     </widget>
      <zorder>label_11</zorder>
      <zorder>label_16</zorder>
      <zorder>label_20</zorder>
@@ -378,6 +391,7 @@ color: rgb(230, 230, 230);</string>
      <zorder>bt_logout</zorder>
      <zorder>label_21</zorder>
      <zorder>label_19</zorder>
+     <zorder>enviararquivo</zorder>
     </widget>
     <widget class="QWidget" name="page_3">
      <widget class="QLineEdit" name="RSenha">
@@ -1321,7 +1335,7 @@ color: rgb(230, 230, 230);</string>
      <x>0</x>
      <y>0</y>
      <width>706</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>

@@ -5,6 +5,9 @@ import Pyro4
 import threading
 import socket as sk
 import pickle
+import os
+import time
+from utils import *
 
 try:
     with open('Usuarios.list', 'rb') as fp:
@@ -19,7 +22,7 @@ def saveusers():
     with open('Usuarios.list', 'wb') as fp:
         pickle.dump(Usuarios,fp)
 
-
+UploadDir = os.path.join(os.getcwd(),os.path.join('Servidor',''))
 class Lobby():
 	def __init__(self, hostname='localhost', port=25501):
 		"""hostname : str (default='localhost') - address which the daemon should run.
@@ -71,16 +74,72 @@ class Server():
 		self.s_thread.start()
 
 	def _run(self):
-		global Usuarios
+		global Usuarios,arquivos_em_transferencia,UploadDir
 		print("Running server")
 		self._server.listen()
 
 		while True:
 			con, _ = self._server.accept()
 			mensagem = con.recv(2048).decode('utf-8')
-
+			comando = mensagem
 			if mensagem == 'GET uri':
 				con.send(json.dumps(self.lobby.chats).encode())
+
+			elif comando[:9] =='download:':
+				print('Iniciando download:') 
+				usuario,comando= comando.replace('download:','').split(':')
+				
+				arquivo = os.path.join(UploadDir ,comando)
+				#Bytes in Test File7
+				print('Arquivo: ',arquivo)
+			
+				numBytesFile = determine_num_bytes(arquivo)
+
+				#Opening the test file
+				testFileObj = open_text_file(os.path.abspath(arquivo))
+				arquivopath = arquivo.replace(UploadDir,'')#usado para poder upar pastas
+				#Read the text file to the socket
+				read_text_file(con, testFileObj, numBytesFile,arquivopath)
+
+				#serverResponse = sock.recv(1024)
+				#print "Server received <" + str(serverResponse) + "> bytes."
+				#Closing the test file
+				testFileObj.close()
+
+			elif comando[:7] == 'upload:':
+				print('Fazendo Upload')
+				filename = comando.replace('upload:','')
+				print(filename)
+				#filename = filename.decode('utf-8')
+				con.send('ok'.encode('utf-8'))
+				
+				filename= os.path.join(UploadDir,filename)
+				print(filename)
+				if not os.path.exists(os.path.dirname(filename)):
+					try:
+						os.makedirs(os.path.dirname(filename))
+					except OSError as exc: # Guard against race condition
+						pass
+				file = open(filename, "w+")
+				#get the first line of the file
+				clientInput = con.recv(1024).decode('utf-8')
+				bytesReceived = 0
+
+				#for each line the client sends, add it to the transf
+				while clientInput != "\r\n\r\n" and clientInput != "":
+					bytesReceived += len(clientInput)
+					file.write(clientInput)
+					clientInput = con.recv(1024).decode('utf-8')
+				
+
+				if(clientInput == "" or clientInput == "\r\n\r\n"):
+				#needs to have the double \\ to cancel out interpreting it as a string
+					
+					con.send(str(bytesReceived).encode('utf-8'))
+					file.close()
+					con.close()
+				time.sleep(2)
+
 			elif mensagem[:11] =='createuser:':
 				usersenha=mensagem.replace('createuser:','')
 				user,_=usersenha.split(':')
