@@ -84,7 +84,7 @@ class User():
 			return 0
 		splits = msg.split(',')
 		if len(splits) > 2:
-			if splits[0] == 'O Usuario'and splits[2] =='convidou você para um chat privado':
+			if splits[0] == 'O Usuario'and splits[2] =='convidou você ':
 				chat = msg.split('->')[1]
 				chat = chat.split('<-')[0]
 				self.changegroup(chat)
@@ -92,7 +92,7 @@ class User():
 				arquivo = msg.split('->')[1]
 				arquivo = arquivo.split('<-')[0]
 				usuario = splits[1]
-				self.SolicitarDownload(os.path.join(usuario,arquivo))
+				self.SolicitarDownload(os.path.join(usuario,arquivo),usuario)
 				#self.chat.send_message("O Usuario,"+self.username+',Enviou o arquivo, ->'+os.path.join(self.username,os.path.basename(file)) +'<- Click aqui para baixar.', self.my_uri)
 
 	
@@ -104,7 +104,7 @@ class User():
 		sock = connect_tcp(self.server, self.port)
 		msg = 'createchat:'+chatname
 		sock.send(msg.encode('utf-8'))
-		self.chat.send_message("O Usuario,"+user+',convidou você para um chat privado, ->'+chatname+'<- Click aqui para ir.', self.my_uri)
+		self.chat.send_message("O Usuario,"+self.username+',convidou você , ('+user+') para um chat privado, ->'+chatname+'<- Click aqui para ir.', self.my_uri)
 		self.changegroup(chatname)
 
 
@@ -121,6 +121,7 @@ class User():
 				if uris[i][0] == value:
 					selection = i
 		uri = uris[int(selection)][1]
+		self.ui.listconectados.clear()
 		print('Uri',uri)
 		print('chamou')
 		self.daemon.unregister(self)
@@ -180,8 +181,19 @@ class User():
 	def incoming_message(self, message):
 		#Recieving a message -> displaying at window.
 		print('mensagem recebida',message)
+		if message[:9] == 'O Usuario':
+			splits =message.split(',')
+			print(splits)
+			if splits[2] =='convidou você ':
+				user = message.split('(')[1]
+				user = user.split(')')[0]
+				if user != self.username:
+					return 0
+
 		self.ui.chatlist.addItem(message)
 		msgsplit = message.split('<-')
+	
+
 		if len(msgsplit) > 1:
 					if msgsplit[1] ==' entrou no grupo.':
 						item = msgsplit[0]
@@ -339,7 +351,7 @@ class User():
 		sock.close()
 
 	@threaded
-	def SolicitarDownload(self,filename):
+	def SolicitarDownload(self,filename,user):
 		print('Fazendo Download:',filename)
 		#Connecting to the server
 		connectionSocket = sk.socket(sk.AF_INET, sk.SOCK_STREAM)
@@ -349,7 +361,7 @@ class User():
 		connectionSocket.send( mensagem.encode('utf-8') )
 		_= connectionSocket.recv(1024)
 		connectionSocket.send('ok'.encode('utf-8') )
-		filename=filename.replace( os.path.join(self.username,''),'')
+		filename=filename.replace(user,self.username)
 		filename= os.path.join(Download_dir,filename)
 		#print('Filename: ', filename)
 		if not os.path.exists(os.path.dirname(filename)):
