@@ -54,10 +54,10 @@ class User():
 		
 		
 		app = QtWidgets.QApplication(sys.argv)
-		MainWindow = QtWidgets.QMainWindow()
+		self.MainWindow = QtWidgets.QMainWindow()
 		app.aboutToQuit.connect(self.logout)
 		self.ui = Ui_MainWindow()
-		self.ui.setupUi(MainWindow)
+		self.ui.setupUi(self.MainWindow)
 		self.ui.sendbtn.clicked.connect(self.send_message)
 		self.ui.grupos.currentTextChanged.connect(self.changegroup)
 		self.ui.grupos.clear()
@@ -72,7 +72,9 @@ class User():
 		self.ui.linesend.returnPressed.connect(self.send_message)
 		self.ui.listconectados.currentItemChanged.connect(self.createprivatechat)
 		self.ui.chatlist.currentItemChanged.connect(self.acaoclickchat)
-		MainWindow.show()
+
+		self.MainWindow.setWindowTitle("Client")
+		self.MainWindow.show()
 		sys.exit(app.exec_())
 
 	
@@ -113,6 +115,11 @@ class User():
 			self.disconnect()
 		except:
 			return 0
+		# usado para fixar problema.
+		if value.find('_') != -1:
+			self.ui.listconectados.setEnabled(False)
+		else:
+			self.ui.listconectados.setEnabled(True)	
 		uris = get_uris(self.server, self.port)
 		#self.ui.grupos.clear()
 		
@@ -257,6 +264,7 @@ class User():
 		comando= sock.recv(1024).decode('utf-8')
 		comando = comando.replace('\r\n\r\n','')
 		if comando == 'ok':
+			self.MainWindow.setWindowTitle(usuario)
 			self._username = usuario
 			uris = get_uris(self.server, self.port)
 			print('uri deve ser asssim:',uris[0][1])

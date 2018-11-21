@@ -1,4 +1,4 @@
-#import chat
+import chat
 import json
 import time
 import Pyro4
@@ -8,82 +8,21 @@ import pickle
 import os
 import time
 from utils import *
-from GuiServer import *
-from PyQt5 import QtCore, QtGui, QtWidgets
 
-@Pyro4.expose
-@Pyro4.behavior(instance_mode="single")
-class Chat():
-	def __init__(self, name=None):
-		self._name = name
-		self.messages = []
-		self.users = {}
-		self.usernames = []
+try:
+    with open('Usuarios.list', 'rb') as fp:
+        Usuarios = pickle.load(fp)
+except:
+    Usuarios = [] 
+    with open('Usuarios.list', 'wb') as fp:
+        pickle.dump(Usuarios,fp)
 
-	def connect(self, uri):
-		"""Method for remote uses to call when wants to connect to this chat."""
+def saveusers():
+    global Usuarios
+    with open('Usuarios.list', 'wb') as fp:
+        pickle.dump(Usuarios,fp)
 
-		#the client uri is passed so it's methods can be called later.
-		client = Pyro4.Proxy(uri)
-
-		#If username taken or uri already in the chat -> quit.
-		if uri in self.users or client.username in self.usernames:
-			return False
-
-		print(f"O cliente '{client.username}'<- entrou no grupo.")
-
-		self._send_message(f'{client.username}<- entrou no grupo.')
-
-		#adding client to chat's users
-		self.users[uri] = client
-		self.usernames.append(client.username)
-
-		if len(self.messages) < 21:
-			return self.messages
-		return self.messages[-20:]
-
-	def disconnect(self, uri):
-		"""Method for remote uses to call when wants to disconnect from this chat."""
-		print(f"{self.users[uri].username}, disconectou-se")
-		self._send_message(f"O usuario ->{self.users[uri].username}<- disconectou-se do grupo.", uri)
-	
-		#clearing the data:
-		self.usernames.remove(self.users[uri].username)
-		del(self.users[uri])
-
-	def send_message(self, message, uri):
-		global ui
-		#if the uri is unknown, the message must not be sent
-		if uri not in self.users:
-			return
-		if message[:9] != 'O Usuario':
-
-			#if the uri doesn't fits the username, someone is pretending to be someone else.
-			sender = message.split(':')[0]
-			if sender != self.users[uri].username:
-				return
-		
-		ui.lista_logs.addItem(self.name+'-->'+message)
-		#actually sending message.
-		self._send_message(message, uri)
-
-	def _send_message(self, message, uri=None):
-		"""Method invisible for remote users due to starting with '_'.
-		register the message and sends to every user connected.
-
-		If it's a system message and must be sent to everybody, no uri is provided."""
-		self.messages.append(message)
-		for user_uri, user in self.users.items():
-			if user_uri == uri: continue
-			user.incoming_message(message)
-
-	def __str__(self):
-		return f"chat named {self.name}"
-
-	@property
-	def name(self):
-		return self._name
-
+UploadDir = os.path.join(os.getcwd(),os.path.join('Servidor',''))
 class Lobby():
 	def __init__(self, hostname='localhost', port=25501):
 		"""hostname : str (default='localhost') - address which the daemon should run.
@@ -105,12 +44,12 @@ class Lobby():
 		- chat_p : str - creates a chat named as {chat_p} and registers it.
 		- chat_p : chat.Chat - registers the chat."""
 		if isinstance(chat_p, str):
-			chat_p = Chat(name=chat_p)
+			chat_p = chat.Chat(name=chat_p)
 			self.register(chat_p)
 		elif chat_p is None:
-			chat_p = Chat()
+			chat_p = chat.Chat()
 			self.register(chat_p)
-		elif isinstance(chat_p, Chat):
+		elif isinstance(chat_p, chat.Chat):
 			uri = str(self.daemon.register(chat_p))
 			self.chats.append((chat_p.name, uri))
 
@@ -135,7 +74,7 @@ class Server():
 		self.s_thread.start()
 
 	def _run(self):
-		global Usuarios,arquivos_em_transferencia,UploadDir,ui
+		global Usuarios,arquivos_em_transferencia,UploadDir
 		print("Running server")
 		self._server.listen()
 
@@ -219,7 +158,6 @@ class Server():
 			elif mensagem[:11] =='createchat:':
 				msg=mensagem.replace('createchat:','')
 				self.lobby.register(msg)#create chat
-				ui.lista_grupos.addItem(msg)
 				
 			elif mensagem[:6] =='login:':
 				usersenha=mensagem.replace('login:','')
@@ -234,90 +172,17 @@ class Server():
 				else:
 					con.send('nok'.encode('utf-8'))
 			con.close()
-
 	def create_chat(self, chat_name):
-		global ui
 		self.lobby.register(chat_name)
-		ui.lista_grupos.addItem(chat_name)
 
-### GUI functions		
-def irgrupos():
-	global ui 
-	ui.stackedWidget.setCurrentIndex(0)
-
-def irlogs():
-	global ui 
-	ui.stackedWidget.setCurrentIndex(1)
-
-def irconfig():
-	global ui 
-	ui.stackedWidget.setCurrentIndex(2)
-
-def startserver():
-	global ui,server 
-	ui.bt_start.setEnabled(False)
-	ui.bt_parar.setEnabled(True)
-	
-	server_ip=ui.server.text()
-	port_lobby=int(ui.lobby_port.text())
-	port =int(ui.port.text())
-	server = Server(hostname=server_ip, port=port, lobby_port=port_lobby)
-	ui.lista_grupos.clear()
-	defaultschats = [ 'Sala','Familia','Memes']
-	for i in defaultschats:
-		server.create_chat(i)
-
+if __name__=="__main__": 
+	server = Server()
+	server.create_chat('Sala')
+	server.create_chat('Familia')
+	server.create_chat('Test')
+	server.create_chat('_1_')
 	server.run()
 
-def stopserver():
-	global server,ui
-	ui.bt_start.setEnabled(True)
-	ui.bt_parar.setEnabled(False)
-	del server
-
-def criargrupo():
-	global ui,server
-	gruponame=ui.gruponame.text()
-	server.create_chat(gruponame)
-
-def clearlogs():
-	global ui
-	ui.lista_logs.clear()
-	
-if __name__=="__main__": 
-	
-	try:
-		with open('Usuarios.list', 'rb') as fp:
-			Usuarios = pickle.load(fp)
-	except:
-		Usuarios = [] 
-		with open('Usuarios.list', 'wb') as fp:
-			pickle.dump(Usuarios,fp)
-
-	def saveusers():
-		global Usuarios
-		with open('Usuarios.list', 'wb') as fp:
-			pickle.dump(Usuarios,fp)
-
-	UploadDir = os.path.join(os.getcwd(),os.path.join('Servidor',''))
-	import sys
-	app = QtWidgets.QApplication(sys.argv)
-	MainWindow = QtWidgets.QMainWindow()
-	
-	server = 0
-	ui = Ui_MainWindow()
-	ui.setupUi(MainWindow)
-	ui.ir_grupos.clicked.connect(irgrupos)
-	ui.ir_grupos_2.clicked.connect(irgrupos)
-	ui.ir_logs.clicked.connect(irlogs)
-	ui.ir_logs_2.clicked.connect(irlogs)
-	ui.ir_config_2.clicked.connect(irconfig)
-	ui.ir_config.clicked.connect(irconfig)
-	ui.bt_start.clicked.connect(startserver)
-	ui.bt_parar.clicked.connect(stopserver)
-	ui.bt_parar.setEnabled(False)
-	ui.bt_criargrupo.clicked.connect(criargrupo)	
-	ui.bt_limpar_logs.clicked.connect(clearlogs)
-	MainWindow.setWindowTitle("Servidor")
-	MainWindow.show()
-	sys.exit(app.exec_())
+	#keeping server alive
+	while True:
+		time.sleep(30)
