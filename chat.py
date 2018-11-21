@@ -45,11 +45,11 @@ class Chat():
 		#if the uri is unknown, the message must not be sent
 		if uri not in self.users:
 			return
-
-		#if the uri doesn't fits the username, someone is pretending to be someone else.
-		sender = message.split(':')[0]
-		if sender != self.users[uri].username:
-			return
+		if message[:9] != 'O Usuario':
+			#if the uri doesn't fits the username, someone is pretending to be someone else.
+			sender = message.split(':')[0]
+			if sender != self.users[uri].username:
+				return
 
 		#actually sending message.
 		self._send_message(message, uri)

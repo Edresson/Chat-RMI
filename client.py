@@ -59,8 +59,50 @@ class User():
 		self.ui.bt_logout.clicked.connect(self.logout)
 		self.ui.bt_voltar.clicked.connect(self.voltar_page)
 		self.ui.linesend.returnPressed.connect(self.send_message)
+		self.ui.listconectados.currentItemChanged.connect(self.createprivatechat)
+		self.ui.chatlist.currentItemChanged.connect(self.acaoclickchat)
 		MainWindow.show()
 		sys.exit(app.exec_())
+
+	def acaoclickchat(self):
+		try:
+			msg = str(self.ui.chatlist.currentItem().text())
+		except:
+			print('erro')
+			return 0
+		splits = msg.split(',')
+		if len(splits) > 2:
+			if splits[0] == 'O Usuario'and splits[2] =='convidou você para um chat privado':
+				chat = msg.split('->')[1]
+				chat = chat.split('<-')[0]
+				self.changegroup(chat)
+	
+	def createprivatechat(self):
+		user=str(self.ui.listconectados.currentItem().text())
+		#print(user)
+		#print(self.ui.listconectados.currentRow()) # get index
+		self.createchat('_'+self.username+'_'+user,user)
+
+	def createchat(self,chatname,user):
+		sock = connect_tcp(self.server, self.port)
+		msg = 'createchat:'+chatname
+		sock.send(msg.encode('utf-8'))
+		#chatname='_1_'
+		self.chat.send_message("O Usuario,"+user+',convidou você para um chat privado, ->'+chatname+'<- Click aqui para ir.', self.my_uri)
+		self.changegroup(chatname)
+		'''self.disconnect()
+		self.daemon.unregister(self)
+		del self.daemon
+		del self.chat
+		del self._my_uri
+		self.chat = Pyro4.Proxy(uri)
+		#self.chat = Pyro4.Proxy(uri)
+		#Creating daemon so the chat can access this object.
+		self.daemon = Pyro4.Daemon()
+		#try:
+		self._my_uri = self.daemon.register(self)
+		self.connect()'''
+
 
 	def changegroup(self, value):
 		try:
@@ -71,17 +113,15 @@ class User():
 		#self.ui.grupos.clear()
 		
 		selection = 0
-		
+		print('URIS no changegroup:',uris)
 		for i in range(len(uris)):
 				#print(uris[i])
 				if uris[i][0] == value:
 					selection = i
 				#self.ui.grupos.addItem(uris[i][0])
-		
-		
-
+		print('Selecionado e nome:',selection,uris[int(selection)][0])
 		uri = uris[int(selection)][1]
-		print(uri)
+		print('Uri',uri)
 		print('chamou')
 		self.daemon.unregister(self)
 		del self.daemon
@@ -89,7 +129,6 @@ class User():
 		del self._my_uri
 		self.chat = Pyro4.Proxy(uri)
 		#self.chat = Pyro4.Proxy(uri)
-		
 		#Creating daemon so the chat can access this object.
 		self.daemon = Pyro4.Daemon()
 		#try:
@@ -97,16 +136,10 @@ class User():
 		self.connect()
 		print("combobox changed", value)
 
-
 	def connect(self):
 		"""Method to connect and register at the chat"""
 
 		print('Connecting to server')
-		'''except:
-			print('unregistred')
-			self.daemon.unregister(self)
-			print('registrando')
-			self._my_uri = self.daemon.register(self)'''
 
 		self.t = threading.Thread(target=self.daemon.requestLoop)
 		self.t.daemon = True
@@ -139,7 +172,7 @@ class User():
 		message = self.ui.linesend.text()
 		self.ui.linesend.setText("")
 		message = f"""{self.username}: {message}"""
-
+		print('mensagem enviada',message)
 		self.chat.send_message(message, self.my_uri)
 
 		#as the chat can't call methods from this object when it's called,
@@ -148,25 +181,33 @@ class User():
 
 	def incoming_message(self, message):
 		#Recieving a message -> displaying at window.
-		self.ui.chatlist.addItem(message)
-		msgsplit = message.split('<-')
-		if len(msgsplit) > 1:
-			print(str(msgsplit[1]),' disconectou-se do grupo.', str(msgsplit[1]) ==' disconectou-se do grupo.')
-			if msgsplit[1] ==' entrou no grupo.':
-				item = msgsplit[0]
-				items_list = self.ui.listconectados.findItems(item,QtCore.Qt.MatchExactly)
-				if len(items_list) == 0:
-					self.ui.listconectados.addItem(item)
-			
-			elif  str(msgsplit[1]) ==' disconectou-se do grupo.':
-				itemName= msgsplit[0].split('->')[1]
-				
-				items_list = self.ui.listconectados.findItems(itemName,QtCore.Qt.MatchExactly)
-				for item in items_list:
-					print('removido',item)
-					r = self.ui.listconectados.row(item)
-					self.ui.listconectados.takeItem(r)
+		print('mensagem recebida',message)
+		if message.find('####################__&&&&&&&&&&&&&&&1111212!@1,') == -1:
+			self.ui.chatlist.addItem(message)
+			msgsplit = message.split('<-')
+			if len(msgsplit) > 1:
+					if msgsplit[1] ==' entrou no grupo.':
+						item = msgsplit[0]
+						items_list = self.ui.listconectados.findItems(item,QtCore.Qt.MatchExactly)
+						if len(items_list) == 0:
+							self.ui.listconectados.addItem(item)
 					
+					elif  str(msgsplit[1]) ==' disconectou-se do grupo.':
+						itemName= msgsplit[0].split('->')[1]
+						
+						items_list = self.ui.listconectados.findItems(itemName,QtCore.Qt.MatchExactly)
+						for item in items_list:
+							r = self.ui.listconectados.row(item)
+							self.ui.listconectados.takeItem(r)
+		else:
+			print('chegou mensagem')
+			msg = message.replace('####################__&&&&&&&&&&&&&&&1111212!@1,','')
+			user, chatname = msg.split(',')
+			print(user , self.username)
+			if user == self.username:
+				self.changegroup(chatname)
+
+
 			
 	def __eq__(self, other):
 		return self.username == other.username
@@ -216,10 +257,12 @@ class User():
 		if comando == 'ok':
 			self._username = usuario
 			uris = get_uris(self.server, self.port)
+			print('uri deve ser asssim:',uris[0][1])
 			self.chat = Pyro4.Proxy(uris[0][1])#set initial uri for default
 			self.ui.grupos.clear()
 			for line in uris:
-				self.ui.grupos.addItem(line[0])
+					#if line[0].find('_') == -1:
+					self.ui.grupos.addItem(line[0])
 
 			self.ui.stackedWidget.setCurrentIndex(0)
 			

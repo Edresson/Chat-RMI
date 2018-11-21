@@ -96,6 +96,9 @@ class Server():
 					Usuarios.append(usersenha)
 					saveusers()
 					con.send('ok'.encode('utf-8'))
+			elif mensagem[:11] =='createchat:':
+				msg=mensagem.replace('createchat:','')
+				self.lobby.register(msg)#create chat
 				
 			elif mensagem[:6] =='login:':
 				usersenha=mensagem.replace('login:','')
@@ -118,6 +121,7 @@ if __name__=="__main__":
 	server.create_chat('Sala')
 	server.create_chat('Familia')
 	server.create_chat('Test')
+	server.create_chat('_1_')
 	server.run()
 
 	#keeping server alive
