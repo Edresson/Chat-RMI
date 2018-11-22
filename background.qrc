@@ -1,0 +1,8 @@
+<RCC>
+  <qresource prefix="fundos">
+    <file>logoanao.png</file>
+    <file>logomenor.png</file>
+    <file>logochat.png</file>
+    <file>whats.png</file>
+  </qresource>
+</RCC>
