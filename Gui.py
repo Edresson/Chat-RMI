@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'Gui.ui'
 #
-# Created by: PyQt5 UI code generator 5.11.2
+# Created by: PyQt5 UI code generator 5.11.3
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -30,6 +30,7 @@ class Ui_MainWindow(object):
         self.grupos.setObjectName("grupos")
         self.chatlist = QtWidgets.QListWidget(self.page)
         self.chatlist.setGeometry(QtCore.QRect(150, 70, 391, 161))
+        self.chatlist.setStyleSheet("background-color: rgba(255, 255, 255, 100);")
         self.chatlist.setObjectName("chatlist")
         self.listconectados = QtWidgets.QListWidget(self.page)
         self.listconectados.setGeometry(QtCore.QRect(550, 80, 111, 121))
@@ -139,6 +140,11 @@ class Ui_MainWindow(object):
         self.enviararquivo = QtWidgets.QPushButton(self.page)
         self.enviararquivo.setGeometry(QtCore.QRect(10, 270, 111, 25))
         self.enviararquivo.setObjectName("enviararquivo")
+        self.label_14 = QtWidgets.QLabel(self.page)
+        self.label_14.setGeometry(QtCore.QRect(150, 70, 391, 161))
+        self.label_14.setStyleSheet("background-image: url(:/fundos/whats.png);")
+        self.label_14.setText("")
+        self.label_14.setObjectName("label_14")
         self.label_11.raise_()
         self.label_16.raise_()
         self.label_20.raise_()
@@ -148,7 +154,6 @@ class Ui_MainWindow(object):
         self.label.raise_()
         self.label_2.raise_()
         self.grupos.raise_()
-        self.chatlist.raise_()
         self.listconectados.raise_()
         self.linesend.raise_()
         self.sendbtn.raise_()
@@ -156,6 +161,8 @@ class Ui_MainWindow(object):
         self.label_21.raise_()
         self.label_19.raise_()
         self.enviararquivo.raise_()
+        self.label_14.raise_()
+        self.chatlist.raise_()
         self.stackedWidget.addWidget(self.page)
         self.page_3 = QtWidgets.QWidget()
         self.page_3.setObjectName("page_3")
@@ -508,7 +515,7 @@ class Ui_MainWindow(object):
         self.stackedWidget.addWidget(self.page_2)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 706, 22))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 706, 21))
         self.menubar.setObjectName("menubar")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
@@ -530,6 +537,7 @@ class Ui_MainWindow(object):
         self.label_17.setText(_translate("MainWindow", "        Login"))
         self.label_19.setText(_translate("MainWindow", "       Login"))
         self.enviararquivo.setText(_translate("MainWindow", "Enviar Arquivo"))
+        self.label_14.setToolTip(_translate("MainWindow", "<html><head/><body><p><img src=\":/fundos/whats.png\"/></p></body></html>"))
         self.Registrar.setText(_translate("MainWindow", "Registrar"))
         self.label_5.setText(_translate("MainWindow", "Usuario:"))
         self.labelsenha.setText(_translate("MainWindow", "Senha:"))
@@ -551,6 +559,7 @@ class Ui_MainWindow(object):
         self.label_12.setText(_translate("MainWindow", "      Register"))
         self.label_13.setText(_translate("MainWindow", "        Chat"))
 
+import resources
 
 if __name__ == "__main__":
     import sys
