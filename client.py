@@ -97,7 +97,10 @@ class User():
 				self.SolicitarDownload(os.path.join(usuario,arquivo),usuario)
 				#self.chat.send_message("O Usuario,"+self.username+',Enviou o arquivo, ->'+os.path.join(self.username,os.path.basename(file)) +'<- Click aqui para baixar.', self.my_uri)
 
-	
+	def trocaporta(self,porta,servidor):
+		user=str(self.ui.listconectados.currentItem().text())
+		self.createchat('_'+self.username+'_'+user,user)
+
 	def createprivatechat(self):
 		user=str(self.ui.listconectados.currentItem().text())
 		self.createchat('_'+self.username+'_'+user,user)

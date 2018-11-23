@@ -17,8 +17,8 @@
    <widget class="QStackedWidget" name="stackedWidget">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>0</y>
+      <x>0</x>
+      <y>10</y>
       <width>691</width>
       <height>371</height>
      </rect>
@@ -938,177 +938,29 @@ color: rgb(230, 230, 230);</string>
      <zorder>label_26</zorder>
      <zorder>label_warning_create</zorder>
     </widget>
-    <widget class="QWidget" name="page_2">
-     <widget class="QLineEdit" name="Senha">
+    <widget class="QWidget" name="page_4">
+     <widget class="QLabel" name="label_28">
       <property name="geometry">
        <rect>
-        <x>320</x>
-        <y>190</y>
-        <width>200</width>
-        <height>25</height>
+        <x>0</x>
+        <y>0</y>
+        <width>671</width>
+        <height>361</height>
        </rect>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>200</width>
-        <height>25</height>
-       </size>
       </property>
       <property name="styleSheet">
-       <string notr="true">background-color: rgb(204, 204, 153);</string>
+       <string notr="true">background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.5, fy:0.5, stop:0 rgba(50, 92, 128, 228), stop:1 rgba(117, 176, 179, 165));</string>
       </property>
       <property name="text">
-       <string>user</string>
-      </property>
-      <property name="echoMode">
-       <enum>QLineEdit::Password</enum>
+       <string/>
       </property>
      </widget>
-     <widget class="QPushButton" name="Login">
+     <widget class="QLineEdit" name="server_edt">
       <property name="geometry">
        <rect>
-        <x>440</x>
-        <y>230</y>
-        <width>80</width>
-        <height>25</height>
-       </rect>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>80</width>
-        <height>25</height>
-       </size>
-      </property>
-      <property name="palette">
-       <palette>
-        <active>
-         <colorrole role="Button">
-          <brush brushstyle="SolidPattern">
-           <color alpha="255">
-            <red>28</red>
-            <green>198</green>
-            <blue>25</blue>
-           </color>
-          </brush>
-         </colorrole>
-         <colorrole role="Base">
-          <brush brushstyle="SolidPattern">
-           <color alpha="255">
-            <red>28</red>
-            <green>198</green>
-            <blue>25</blue>
-           </color>
-          </brush>
-         </colorrole>
-         <colorrole role="Window">
-          <brush brushstyle="SolidPattern">
-           <color alpha="255">
-            <red>28</red>
-            <green>198</green>
-            <blue>25</blue>
-           </color>
-          </brush>
-         </colorrole>
-        </active>
-        <inactive>
-         <colorrole role="Button">
-          <brush brushstyle="SolidPattern">
-           <color alpha="255">
-            <red>28</red>
-            <green>198</green>
-            <blue>25</blue>
-           </color>
-          </brush>
-         </colorrole>
-         <colorrole role="Base">
-          <brush brushstyle="SolidPattern">
-           <color alpha="255">
-            <red>28</red>
-            <green>198</green>
-            <blue>25</blue>
-           </color>
-          </brush>
-         </colorrole>
-         <colorrole role="Window">
-          <brush brushstyle="SolidPattern">
-           <color alpha="255">
-            <red>28</red>
-            <green>198</green>
-            <blue>25</blue>
-           </color>
-          </brush>
-         </colorrole>
-        </inactive>
-        <disabled>
-         <colorrole role="Button">
-          <brush brushstyle="SolidPattern">
-           <color alpha="255">
-            <red>28</red>
-            <green>198</green>
-            <blue>25</blue>
-           </color>
-          </brush>
-         </colorrole>
-         <colorrole role="Base">
-          <brush brushstyle="SolidPattern">
-           <color alpha="255">
-            <red>28</red>
-            <green>198</green>
-            <blue>25</blue>
-           </color>
-          </brush>
-         </colorrole>
-         <colorrole role="Window">
-          <brush brushstyle="SolidPattern">
-           <color alpha="255">
-            <red>28</red>
-            <green>198</green>
-            <blue>25</blue>
-           </color>
-          </brush>
-         </colorrole>
-        </disabled>
-       </palette>
-      </property>
-      <property name="font">
-       <font>
-        <family>Lucida Sans Unicode</family>
-        <pointsize>10</pointsize>
-        <italic>true</italic>
-       </font>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">background-color: rgb(28, 198, 25);</string>
-      </property>
-      <property name="text">
-       <string>Login</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="Registrarse">
-      <property name="geometry">
-       <rect>
-        <x>380</x>
-        <y>290</y>
-        <width>91</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>145</width>
-        <height>100</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>Registrar-se </string>
-      </property>
-     </widget>
-     <widget class="QLineEdit" name="Usuario">
-      <property name="geometry">
-       <rect>
-        <x>320</x>
-        <y>150</y>
-        <width>200</width>
+        <x>230</x>
+        <y>240</y>
+        <width>101</width>
         <height>25</height>
        </rect>
       </property>
@@ -1133,61 +985,138 @@ color: rgb(230, 230, 230);</string>
        <string notr="true">background-color: rgb(204, 204, 153);</string>
       </property>
       <property name="text">
-       <string>user</string>
+       <string>127.0.0.1</string>
       </property>
       <property name="placeholderText">
        <string>user</string>
       </property>
      </widget>
-     <widget class="QLabel" name="label_3">
+     <widget class="QLabel" name="label_27">
       <property name="geometry">
        <rect>
-        <x>340</x>
-        <y>270</y>
-        <width>191</width>
-        <height>20</height>
+        <x>140</x>
+        <y>90</y>
+        <width>391</width>
+        <height>121</height>
        </rect>
       </property>
-      <property name="maximumSize">
-       <size>
-        <width>191</width>
-        <height>20</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>Não possui conta ?  Registre-se</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_warning">
-      <property name="geometry">
-       <rect>
-        <x>280</x>
-        <y>260</y>
-        <width>301</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>350</width>
-        <height>20</height>
-       </size>
-      </property>
-      <property name="font">
-       <font>
-        <family>Nirmala UI</family>
-        <pointsize>8</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;img src=&quot;:/fundos/logochat.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
       <property name="styleSheet">
-       <string notr="true">color: rgb(255, 1, 1);</string>
+       <string notr="true">background-image: url(:/fundos/logomenor.png);</string>
       </property>
       <property name="text">
        <string/>
       </property>
      </widget>
+     <widget class="QLabel" name="label">
+      <property name="geometry">
+       <rect>
+        <x>230</x>
+        <y>210</y>
+        <width>231</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Maiandra GD</family>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+      <property name="layoutDirection">
+       <enum>Qt::LeftToRight</enum>
+      </property>
+      <property name="text">
+       <string>Escolha o IP e porta do Servidor</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_2">
+      <property name="geometry">
+       <rect>
+        <x>220</x>
+        <y>20</y>
+        <width>311</width>
+        <height>81</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>MS Gothic</family>
+        <pointsize>24</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(255, 255, 255);</string>
+      </property>
+      <property name="text">
+       <string>Seja Bem Vindo </string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="Conectar">
+      <property name="geometry">
+       <rect>
+        <x>260</x>
+        <y>280</y>
+        <width>121</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Arial Black</family>
+        <pointsize>10</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgba(32, 234, 49, 100);
+color: rgb(230, 230, 230);</string>
+      </property>
+      <property name="text">
+       <string>Conectar</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="porta_edt">
+      <property name="geometry">
+       <rect>
+        <x>350</x>
+        <y>240</y>
+        <width>101</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>200</width>
+        <height>25</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <family>Maiandra GD</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="accessibleDescription">
+       <string>User</string>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(204, 204, 153);</string>
+      </property>
+      <property name="text">
+       <string>25500</string>
+      </property>
+      <property name="placeholderText">
+       <string>user</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="page_2">
      <widget class="QLabel" name="label_6">
       <property name="geometry">
        <rect>
@@ -1242,19 +1171,6 @@ color: rgb(230, 230, 230);</string>
       </property>
       <property name="text">
        <string>Please login</string>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="checkBox">
-      <property name="geometry">
-       <rect>
-        <x>320</x>
-        <y>220</y>
-        <width>81</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Remember</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_8">
@@ -1500,7 +1416,275 @@ color: rgb(230, 230, 230);</string>
        <string/>
       </property>
      </widget>
-     <widget class="QLabel" name="label_22">
+     <widget class="QWidget" name="gridLayoutWidget">
+      <property name="geometry">
+       <rect>
+        <x>320</x>
+        <y>140</y>
+        <width>221</width>
+        <height>80</height>
+       </rect>
+      </property>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="0" column="0">
+        <widget class="QLineEdit" name="Usuario">
+         <property name="maximumSize">
+          <size>
+           <width>200</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Maiandra GD</family>
+           <pointsize>12</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="accessibleDescription">
+          <string>User</string>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(204, 204, 153);</string>
+         </property>
+         <property name="text">
+          <string>user</string>
+         </property>
+         <property name="placeholderText">
+          <string>user</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLineEdit" name="Senha">
+         <property name="maximumSize">
+          <size>
+           <width>200</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(204, 204, 153);</string>
+         </property>
+         <property name="text">
+          <string>user</string>
+         </property>
+         <property name="echoMode">
+          <enum>QLineEdit::Password</enum>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="gridLayoutWidget_2">
+      <property name="geometry">
+       <rect>
+        <x>320</x>
+        <y>230</y>
+        <width>81</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="0" column="0">
+        <widget class="QCheckBox" name="checkBox">
+         <property name="text">
+          <string>Remember</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="gridLayoutWidget_3">
+      <property name="geometry">
+       <rect>
+        <x>280</x>
+        <y>260</y>
+        <width>291</width>
+        <height>63</height>
+       </rect>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_3">
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_3">
+         <property name="maximumSize">
+          <size>
+           <width>191</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Não possui conta ?  Registre-se</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_warning">
+         <property name="maximumSize">
+          <size>
+           <width>350</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Nirmala UI</family>
+           <pointsize>8</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">color: rgb(255, 1, 1);</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QPushButton" name="Registrarse">
+         <property name="maximumSize">
+          <size>
+           <width>145</width>
+           <height>100</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Registrar-se </string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="gridLayoutWidget_4">
+      <property name="geometry">
+       <rect>
+        <x>440</x>
+        <y>220</y>
+        <width>91</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_4">
+       <item row="0" column="0">
+        <widget class="QPushButton" name="Login">
+         <property name="maximumSize">
+          <size>
+           <width>80</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="palette">
+          <palette>
+           <active>
+            <colorrole role="Button">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>28</red>
+               <green>198</green>
+               <blue>25</blue>
+              </color>
+             </brush>
+            </colorrole>
+            <colorrole role="Base">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>28</red>
+               <green>198</green>
+               <blue>25</blue>
+              </color>
+             </brush>
+            </colorrole>
+            <colorrole role="Window">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>28</red>
+               <green>198</green>
+               <blue>25</blue>
+              </color>
+             </brush>
+            </colorrole>
+           </active>
+           <inactive>
+            <colorrole role="Button">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>28</red>
+               <green>198</green>
+               <blue>25</blue>
+              </color>
+             </brush>
+            </colorrole>
+            <colorrole role="Base">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>28</red>
+               <green>198</green>
+               <blue>25</blue>
+              </color>
+             </brush>
+            </colorrole>
+            <colorrole role="Window">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>28</red>
+               <green>198</green>
+               <blue>25</blue>
+              </color>
+             </brush>
+            </colorrole>
+           </inactive>
+           <disabled>
+            <colorrole role="Button">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>28</red>
+               <green>198</green>
+               <blue>25</blue>
+              </color>
+             </brush>
+            </colorrole>
+            <colorrole role="Base">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>28</red>
+               <green>198</green>
+               <blue>25</blue>
+              </color>
+             </brush>
+            </colorrole>
+            <colorrole role="Window">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>28</red>
+               <green>198</green>
+               <blue>25</blue>
+              </color>
+             </brush>
+            </colorrole>
+           </disabled>
+          </palette>
+         </property>
+         <property name="font">
+          <font>
+           <family>Lucida Sans Unicode</family>
+           <pointsize>10</pointsize>
+           <italic>true</italic>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(28, 198, 25);</string>
+         </property>
+         <property name="text">
+          <string>Login</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="gridLayoutWidget_5">
       <property name="geometry">
        <rect>
         <x>330</x>
@@ -1509,35 +1693,38 @@ color: rgb(230, 230, 230);</string>
         <height>91</height>
        </rect>
       </property>
-      <property name="toolTip">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;img src=&quot;:/fundos/logochat.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">background-image: url(:/fundos/logoanao.png);</string>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
+      <layout class="QGridLayout" name="gridLayout_5">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_22">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;img src=&quot;:/fundos/logochat.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-image: url(:/fundos/logoanao.png);</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
      <zorder>label_8</zorder>
-     <zorder>label_10</zorder>
      <zorder>label_9</zorder>
      <zorder>label_6</zorder>
      <zorder>label_7</zorder>
-     <zorder>Senha</zorder>
-     <zorder>Login</zorder>
-     <zorder>Registrarse</zorder>
-     <zorder>Usuario</zorder>
-     <zorder>label_3</zorder>
-     <zorder>label_warning</zorder>
      <zorder>label_4</zorder>
-     <zorder>checkBox</zorder>
-     <zorder>label_12</zorder>
+     <zorder>gridLayoutWidget</zorder>
+     <zorder>gridLayoutWidget_2</zorder>
+     <zorder>gridLayoutWidget_3</zorder>
+     <zorder>gridLayoutWidget_4</zorder>
+     <zorder>gridLayoutWidget_5</zorder>
+     <zorder>label_10</zorder>
      <zorder>label_13</zorder>
-     <zorder>label_42</zorder>
+     <zorder>label_12</zorder>
      <zorder>label_43</zorder>
+     <zorder>label_42</zorder>
      <zorder>label_44</zorder>
-     <zorder>label_22</zorder>
     </widget>
    </widget>
   </widget>
