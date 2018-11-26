@@ -10,7 +10,8 @@ import time
 from utils import *
 from GuiServer import *
 from PyQt5 import QtCore, QtGui, QtWidgets
-
+Banidos = []
+Conectados =[]
 @Pyro4.expose
 @Pyro4.behavior(instance_mode="single")
 class Chat():
@@ -22,7 +23,7 @@ class Chat():
 
 	def connect(self, uri):
 		"""Method for remote uses to call when wants to connect to this chat."""
-
+		global ui
 		#the client uri is passed so it's methods can be called later.
 		client = Pyro4.Proxy(uri)
 
@@ -31,6 +32,16 @@ class Chat():
 			return False
 
 		print(f"O cliente '{client.username}'<- entrou no grupo.")
+		item = client.username
+		Conectados.append(item)
+		ui.lista_onlines.clear()
+		for item in Conectados:
+			ui.lista_onlines.addItem(item)
+
+		'''ui.lista_onlines.setEnabled(False)
+		ui.lista_banidos.setEnabled(False)
+		ui.lista_onlines.setEnabled(True)
+		ui.lista_banidos.setEnabled(True)'''
 
 		self._send_message(f'{client.username}<- entrou no grupo.')
 
@@ -46,7 +57,14 @@ class Chat():
 		"""Method for remote uses to call when wants to disconnect from this chat."""
 		print(f"{self.users[uri].username}, disconectou-se")
 		self._send_message(f"O usuario ->{self.users[uri].username}<- disconectou-se do grupo.", uri)
-	
+		item = self.users[uri].username
+		Conectados.remove(item)
+		ui.lista_onlines.clear()
+		for item in Conectados:
+			ui.lista_onlines.addItem(item)
+
+		
+
 		#clearing the data:
 		self.usernames.remove(self.users[uri].username)
 		del(self.users[uri])
@@ -229,10 +247,29 @@ class Server():
 					print(i,usersenha)
 					if i == usersenha:
 						existe = True
+				
 				if existe:
-					con.send('ok'.encode('utf-8'))
+					banido = False
+					for i in Banidos:
+						if i == usersenha.split(':')[0]:
+							banido =True
+							
+					if banido == True:
+						con.send('ban'.encode('utf-8'))
+					else:
+						con.send('ok'.encode('utf-8'))
 				else:
 					con.send('nok'.encode('utf-8'))
+
+			elif  mensagem[:6] =='toban:':
+				
+				_,user=mensagem.split(':')
+				print('recebeu checkban: ',user)
+				if  user in Banidos:
+					con.send('ban'.encode('utf-8'))
+				else:
+					con.send('nban'.encode('utf-8'))
+			
 			con.close()
 
 	def create_chat(self, chat_name):
@@ -299,6 +336,55 @@ if __name__=="__main__":
 		with open('Usuarios.list', 'wb') as fp:
 			pickle.dump(Usuarios,fp)
 
+	def baniruser():
+		global ui,Banidos,Conectados
+		try:
+			user=str(ui.lista_onlines.currentItem().text())
+		except:
+			return 0	
+		item = ui.lista_onlines.findItems(user, QtCore.Qt.MatchRegExp)[0]
+    	item.setSelected(False)
+		Conectados.remove(user)
+		ui.lista_onlines.clear()
+		for item in Conectados:
+			ui.lista_onlines.addItem(item)
+
+		Banidos.append(user)
+		#ui.lista_banidos.addItem(user)
+		ui.lista_banidos.clear()
+		for item in Banidos:
+			print('item adicionado nos banidos',item)
+			ui.lista_banidos.addItem(item)
+		ui.lista_onlines.clearSelection()
+		'''ui.lista_onlines.setEnabled(False)
+		ui.lista_banidos.setEnabled(False)
+		ui.lista_onlines.setEnabled(True)
+		ui.lista_banidos.setEnabled(True)'''
+		
+	def desbaniruser():
+		global ui,Banidos,Conectados
+		try:
+			user=str(ui.lista_banidos.currentItem().text())
+		except:
+			print('Excessão no desbanir user')
+			return 0
+		
+		#ui.lista_onlines.addItem(user)
+		Banidos.remove(user)
+		print('item removido dos banidos',user)
+		ui.lista_banidos.clear()
+		for item in Banidos:
+			ui.lista_banidos.addItem(item)
+		
+		ui.lista_banidos.clearSelection()
+		'''ui.lista_onlines.setEnabled(False)
+		ui.lista_banidos.setEnabled(False)
+		ui.lista_onlines.setEnabled(True)
+		ui.lista_banidos.setEnabled(True)'''
+		
+		
+
+
 	UploadDir = os.path.join(os.getcwd(),os.path.join('Servidor',''))
 	import sys
 	app = QtWidgets.QApplication(sys.argv)
@@ -318,6 +404,8 @@ if __name__=="__main__":
 	ui.bt_parar.setEnabled(False)
 	ui.bt_criargrupo.clicked.connect(criargrupo)	
 	ui.bt_limpar_logs.clicked.connect(clearlogs)
+	ui.lista_onlines.currentItemChanged.connect(baniruser)
+	ui.lista_banidos.currentItemChanged.connect(desbaniruser)
 	MainWindow.setWindowTitle("Servidor")
 	MainWindow.show()
 	sys.exit(app.exec_())

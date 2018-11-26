@@ -4,7 +4,8 @@ import threading
 import sys
 from Gui import *
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QApplication, QMessageBox, QMainWindow, QAction
+from PyQt5.QtWidgets import QApplication, QMessageBox, QMainWindow, QAction,QFileDialog,QListWidgetItem
+from PyQt5.QtGui import QColor
 import socket as sk
 import json
 import hashlib 
@@ -12,10 +13,9 @@ import sys
 import os 
 import time
 from utils import *
-from PyQt5.QtWidgets import QFileDialog
 
 Download_dir = os.path.join(os.getcwd(),os.path.join('Downloads',''))
-
+ativo = False
     
 
 def get_uris(server, port):
@@ -68,11 +68,11 @@ class User():
 		self.ui.bt_logout.clicked.connect(self.logout)
 		self.ui.bt_voltar.clicked.connect(self.voltar_page)
 		self.ui.enviararquivo.clicked.connect(self.enviar_arquivo)
-
+		self.ui.Conectar.clicked.connect(self.troca_server_porta)
+                
 		self.ui.linesend.returnPressed.connect(self.send_message)
 		self.ui.listconectados.currentItemChanged.connect(self.createprivatechat)
 		self.ui.chatlist.currentItemChanged.connect(self.acaoclickchat)
-
 		self.MainWindow.setWindowTitle("Client")
 		self.MainWindow.show()
 		sys.exit(app.exec_())
@@ -96,10 +96,14 @@ class User():
 				usuario = splits[1]
 				self.SolicitarDownload(os.path.join(usuario,arquivo),usuario)
 				#self.chat.send_message("O Usuario,"+self.username+',Enviou o arquivo, ->'+os.path.join(self.username,os.path.basename(file)) +'<- Click aqui para baixar.', self.my_uri)
-
-	def trocaporta(self,porta,servidor):
-		user=str(self.ui.listconectados.currentItem().text())
-		self.createchat('_'+self.username+'_'+user,user)
+        # 2 seja bem vindo
+        # 1 regitro 
+        # 0 chat 
+        # 3 login
+	def troca_server_porta(self):
+                self.server = str(self.ui.server_edt.text())
+                self.port = int(self.ui.porta_edt.text())
+                self.ui.stackedWidget.setCurrentIndex(3)
 
 	def createprivatechat(self):
 		user=str(self.ui.listconectados.currentItem().text())
@@ -209,7 +213,11 @@ class User():
 						item = msgsplit[0]
 						items_list = self.ui.listconectados.findItems(item,QtCore.Qt.MatchExactly)
 						if len(items_list) == 0:
-							self.ui.listconectados.addItem(item)
+							i = QListWidgetItem('%s' % item)
+							if item == self.username:
+                                                                #i.setTextColor(QtGui.QColor("blue"))
+                                                                i.setBackground(QtGui.QColor("#5596e6"))
+							self.ui.listconectados.addItem(i)
 					
 					elif  str(msgsplit[1]) ==' disconectou-se do grupo.':
 						itemName= msgsplit[0].split('->')[1]
@@ -257,9 +265,10 @@ class User():
 		self.ui.stackedWidget.setCurrentIndex(1)
 
 	def voltar_page(self):
-		self.ui.stackedWidget.setCurrentIndex(2) # return for login
+		self.ui.stackedWidget.setCurrentIndex(3) # return for login
 	
 	def login(self):
+		global ativo
 		sock = connect_tcp(self.server, self.port)
 		usuario,senha=self.get_login_information()
 		msg = 'login:'+usuario+':'+senha
@@ -267,6 +276,8 @@ class User():
 		comando= sock.recv(1024).decode('utf-8')
 		comando = comando.replace('\r\n\r\n','')
 		if comando == 'ok':
+			ativo = True
+			self.checkban(usuario)
 			self.MainWindow.setWindowTitle(usuario)
 			self._username = usuario
 			uris = get_uris(self.server, self.port)
@@ -276,6 +287,7 @@ class User():
 			for line in uris:
 				if line[0].find('_') == -1:
 					self.ui.grupos.addItem(line[0])
+					
 
 			self.ui.stackedWidget.setCurrentIndex(0)
 			
@@ -290,10 +302,30 @@ class User():
 				self.disconnect()
 		elif comando == 'nok':
 			self.ui.label_warning.setText("Senha ou usuario incorreto tente novamente")
+		elif comando == 'ban':
+			self.ui.label_warning.setText("Você está Banido ! Flw")
+	
+	@threaded
+	def checkban(self,user):
+		global ativo 
+		while ativo:
+			time.sleep(3)
+			sock = connect_tcp(self.server, self.port)
+			msg = 'toban:'+user
+			print('Enviou checkban')
+			sock.send(msg.encode('utf-8') )
+			resp= sock.recv(1024).decode('utf-8')
+			print(resp)
+			if resp == 'ban':
+				self.logout()
+			
+
+
 
 	def proxima_page(self):
 		self.ui.stackedWidget.setCurrentIndex(3)
-
+        # 2 seja bem vindo
+        # 1 regitro
 	def voltar_page(self):
 		self.ui.stackedWidget.setCurrentIndex(2)
 
@@ -311,12 +343,14 @@ class User():
 		comando = comando.replace('\r\n\r\n','')
 		if comando == 'ok':
 			os.mkdir(os.path.join(Download_dir,usuario))
-			self.ui.stackedWidget.setCurrentIndex(2) # return for login
+			self.ui.stackedWidget.setCurrentIndex(3) # return for login
 		elif comando == 'nok':
 			self.ui.label_warning_create.setText("Esse Usuario já existe faça login !")
 	
 	def logout(self):
-		self.ui.stackedWidget.setCurrentIndex(2) # return for login
+		global ativo
+		ativo = False
+		self.ui.stackedWidget.setCurrentIndex(3) # return for login
 		try:
 			self.disconnect()
 		except:
