@@ -16,7 +16,7 @@ from utils import *
 
 Download_dir = os.path.join(os.getcwd(),os.path.join('Downloads',''))
 ativo = False
-conectado = False    
+conectado = ''   
 
 def get_uris(server, port):
 	'''Função que se conecta ao servidor \"dns\" de uri
@@ -292,11 +292,12 @@ class User():
 		comando = comando.replace('\r\n\r\n','')
 		if comando == 'ok':
 			self.ui.stackedWidget.setCurrentIndex(0)
-			if conectado ==False:
-				conectado = True
+			if conectado =='':
+				
 
 				self.MainWindow.setWindowTitle(usuario)
 				self._username = usuario
+				conectado = usuario
 				uris = get_uris(self.server, self.port)
 				print('uri deve ser asssim:',uris[0][1])
 				self.chat = Pyro4.Proxy(uris[0][1])#set initial uri for default
@@ -304,8 +305,6 @@ class User():
 				for line in uris:
 					if line[0].find('_') == -1:
 						self.ui.grupos.addItem(line[0])
-						
-
 			
 			
 				#Creating daemon so the chat can access this object.
@@ -334,6 +333,56 @@ class User():
 				
 				ativo = True
 				self.checkban(usuario)
+			elif conectado != '' and conectado != usuario:
+				#logout
+				try:
+						self.disconnect()
+				except Exception as e:
+						print(e)
+				self.daemon.unregister(self)
+				del self.daemon
+				del self.chat
+				del self._my_uri
+				#login
+				self.MainWindow.setWindowTitle(usuario)
+				self._username = usuario
+				conectado = usuario
+				uris = get_uris(self.server, self.port)
+				print('uri deve ser asssim:',uris[0][1])
+				self.chat = Pyro4.Proxy(uris[0][1])#set initial uri for default
+				self.ui.grupos.clear()
+				for line in uris:
+					if line[0].find('_') == -1:
+						self.ui.grupos.addItem(line[0])
+			
+			
+				#Creating daemon so the chat can access this object.
+				self.daemon = Pyro4.Daemon()
+
+				try:
+					self.disconnect()
+					self.daemon.unregister(self)
+				except Exception as e:
+					print(e)
+			
+
+				try:
+					self._my_uri = self.daemon.register(self)		
+				except Exception as e:
+					print('primeiro except:',e)
+					self.daemon.unregister(self)
+					self._my_uri = self.daemon.register(self)
+
+				
+				try:
+					self.connect()
+				except Exception as e:
+					print(e)
+					self.disconnect()
+				
+				ativo = True
+				self.checkban(usuario)
+
 		elif comando == 'nok':
 			self.ui.label_warning.setText("Senha ou usuario incorreto tente novamente")
 		elif comando == 'ban':

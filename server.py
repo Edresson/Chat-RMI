@@ -274,7 +274,7 @@ class Server():
 							Conectados.append(usersenha.split(':')[0])
 							ui.lista_onlines.clear()
 							for i in Conectados:
-								ui.lista_onlines.addItem(usersenha.split(':')[0])
+								ui.lista_onlines.addItem(i)
 							
 				else:
 					con.send('nok'.encode('utf-8'))
@@ -367,6 +367,9 @@ if __name__=="__main__":
 		for item in Conectados:
 			ui.lista_onlines.addItem(item)
 
+		
+		
+
 		Banidos.append(user)
 		#ui.lista_banidos.addItem(user)
 		ui.lista_banidos.clear()
@@ -378,6 +381,12 @@ if __name__=="__main__":
 		ui.lista_banidos.setEnabled(False)
 		ui.lista_onlines.setEnabled(True)
 		ui.lista_banidos.setEnabled(True)'''
+		ui.lista_banidos.setEnabled(False)
+		ui.lista_onlines.setEnabled(False)
+		time.sleep(2)
+		ui.lista_onlines.setEnabled(True)
+		ui.lista_banidos.setEnabled(True)
+
 		
 	def desbaniruser():
 		global ui,Banidos,Conectados
