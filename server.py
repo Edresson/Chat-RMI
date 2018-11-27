@@ -33,15 +33,12 @@ class Chat():
 
 		print(f"O cliente '{client.username}'<- entrou no grupo.")
 		item = client.username
-		Conectados.append(item)
-		ui.lista_onlines.clear()
-		for item in Conectados:
-			ui.lista_onlines.addItem(item)
-
-		'''ui.lista_onlines.setEnabled(False)
-		ui.lista_banidos.setEnabled(False)
-		ui.lista_onlines.setEnabled(True)
-		ui.lista_banidos.setEnabled(True)'''
+		if item not in Conectados:
+			Conectados.append(item)
+			ui.lista_onlines.clear()
+			
+			for item in Conectados:
+				ui.lista_onlines.addItem(item)
 
 		self._send_message(f'{client.username}<- entrou no grupo.')
 
@@ -70,11 +67,24 @@ class Chat():
 		del(self.users[uri])
 
 	def send_message(self, message, uri):
-		global ui
+		global ui,Banidos
 		#if the uri is unknown, the message must not be sent
 		if uri not in self.users:
 			return
-		if message[:9] != 'O Usuario':
+
+		if message [:len('___toban,')] == '___toban,':
+			print('recebeu checando banido:',message )
+			_,user = message.split(',')
+			if user == self.users[uri].username :
+				if  user in Banidos:
+					self._send_message(message+',y', uri)
+				else:
+					self._send_message(message+',n', uri)
+				return
+			else:
+				return 
+		
+		elif message[:9] != 'O Usuario':
 
 			#if the uri doesn't fits the username, someone is pretending to be someone else.
 			sender = message.split(':')[0]
@@ -92,9 +102,11 @@ class Chat():
 		If it's a system message and must be sent to everybody, no uri is provided."""
 		self.messages.append(message)
 		for user_uri, user in self.users.items():
-			if user_uri == uri: continue
+			if user_uri == uri: 
+				if message [:len('___toban,')] != '___toban,':
+					continue
 			user.incoming_message(message)
-
+	
 	def __str__(self):
 		return f"chat named {self.name}"
 
@@ -258,6 +270,12 @@ class Server():
 						con.send('ban'.encode('utf-8'))
 					else:
 						con.send('ok'.encode('utf-8'))
+						if usersenha.split(':')[0] not in Conectados:
+							Conectados.append(usersenha.split(':')[0])
+							ui.lista_onlines.clear()
+							for i in Conectados:
+								ui.lista_onlines.addItem(usersenha.split(':')[0])
+							
 				else:
 					con.send('nok'.encode('utf-8'))
 
@@ -342,8 +360,8 @@ if __name__=="__main__":
 			user=str(ui.lista_onlines.currentItem().text())
 		except:
 			return 0	
-		item = ui.lista_onlines.findItems(user, QtCore.Qt.MatchRegExp)[0]
-    	item.setSelected(False)
+		'''item = ui.lista_onlines.findItems(user, QtCore.Qt.MatchRegExp)[0]
+		item.setSelected(False)'''
 		Conectados.remove(user)
 		ui.lista_onlines.clear()
 		for item in Conectados:
@@ -355,7 +373,7 @@ if __name__=="__main__":
 		for item in Banidos:
 			print('item adicionado nos banidos',item)
 			ui.lista_banidos.addItem(item)
-		ui.lista_onlines.clearSelection()
+		#ui.lista_onlines.clearSelection()
 		'''ui.lista_onlines.setEnabled(False)
 		ui.lista_banidos.setEnabled(False)
 		ui.lista_onlines.setEnabled(True)
@@ -376,7 +394,7 @@ if __name__=="__main__":
 		for item in Banidos:
 			ui.lista_banidos.addItem(item)
 		
-		ui.lista_banidos.clearSelection()
+		#ui.lista_banidos.clearSelection()
 		'''ui.lista_onlines.setEnabled(False)
 		ui.lista_banidos.setEnabled(False)
 		ui.lista_onlines.setEnabled(True)

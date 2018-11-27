@@ -16,7 +16,7 @@ from utils import *
 
 Download_dir = os.path.join(os.getcwd(),os.path.join('Downloads',''))
 ativo = False
-    
+conectado = False    
 
 def get_uris(server, port):
 	'''Função que se conecta ao servidor \"dns\" de uri
@@ -69,7 +69,7 @@ class User():
 		self.ui.bt_voltar.clicked.connect(self.voltar_page)
 		self.ui.enviararquivo.clicked.connect(self.enviar_arquivo)
 		self.ui.Conectar.clicked.connect(self.troca_server_porta)
-                
+		self.ui.Logout_ban.clicked.connect(self.logout)
 		self.ui.linesend.returnPressed.connect(self.send_message)
 		self.ui.listconectados.currentItemChanged.connect(self.createprivatechat)
 		self.ui.chatlist.currentItemChanged.connect(self.acaoclickchat)
@@ -99,11 +99,12 @@ class User():
         # 2 seja bem vindo
         # 1 regitro 
         # 0 chat 
-        # 3 login
+        # 3 ban janela 
+		# 4 login
 	def troca_server_porta(self):
                 self.server = str(self.ui.server_edt.text())
                 self.port = int(self.ui.porta_edt.text())
-                self.ui.stackedWidget.setCurrentIndex(3)
+                self.ui.stackedWidget.setCurrentIndex(4)
 
 	def createprivatechat(self):
 		user=str(self.ui.listconectados.currentItem().text())
@@ -157,7 +158,7 @@ class User():
 		self.t = threading.Thread(target=self.daemon.requestLoop)
 		self.t.daemon = True
 		self.t.start()
-
+		print('daemon thread started')
 		messages = self.chat.connect(self.my_uri)
 
 		#in case the connection is refused:
@@ -193,8 +194,22 @@ class User():
 		self.incoming_message(message)
 
 	def incoming_message(self, message):
+		global ativo
 		#Recieving a message -> displaying at window.
-		print('mensagem recebida',message)
+		
+		if message [:len('___toban,')] == '___toban,':
+			_,user,ac =message.split(',')
+			#print('mensagem recebida fora if',message,'ac:',ac,self.username,user)
+			if user == self.username:
+				#print('mensagem recebida',message,'ac:',ac,self.username,user)
+				if ac == 'y':
+					ativo = False
+					self.ui.stackedWidget.setCurrentIndex(3)
+					
+				return	
+			else:
+				return
+
 		if message[:9] == 'O Usuario':
 			splits =message.split(',')
 			print(splits)
@@ -202,7 +217,7 @@ class User():
 				user = message.split('(')[1]
 				user = user.split(')')[0]
 				if user != self.username:
-					return 0
+					return
 
 		self.ui.chatlist.addItem(message)
 		msgsplit = message.split('<-')
@@ -268,7 +283,7 @@ class User():
 		self.ui.stackedWidget.setCurrentIndex(3) # return for login
 	
 	def login(self):
-		global ativo
+		global ativo,conectado
 		sock = connect_tcp(self.server, self.port)
 		usuario,senha=self.get_login_information()
 		msg = 'login:'+usuario+':'+senha
@@ -276,54 +291,57 @@ class User():
 		comando= sock.recv(1024).decode('utf-8')
 		comando = comando.replace('\r\n\r\n','')
 		if comando == 'ok':
-			ativo = True
-			self.checkban(usuario)
-			self.MainWindow.setWindowTitle(usuario)
-			self._username = usuario
-			uris = get_uris(self.server, self.port)
-			print('uri deve ser asssim:',uris[0][1])
-			self.chat = Pyro4.Proxy(uris[0][1])#set initial uri for default
-			self.ui.grupos.clear()
-			for line in uris:
-				if line[0].find('_') == -1:
-					self.ui.grupos.addItem(line[0])
-					
-
 			self.ui.stackedWidget.setCurrentIndex(0)
+			if conectado ==False:
+				conectado = True
+
+				self.MainWindow.setWindowTitle(usuario)
+				self._username = usuario
+				uris = get_uris(self.server, self.port)
+				print('uri deve ser asssim:',uris[0][1])
+				self.chat = Pyro4.Proxy(uris[0][1])#set initial uri for default
+				self.ui.grupos.clear()
+				for line in uris:
+					if line[0].find('_') == -1:
+						self.ui.grupos.addItem(line[0])
+						
+
 			
-			#Creating daemon so the chat can access this object.
-			self.daemon = Pyro4.Daemon()
-			self._my_uri = self.daemon.register(self)
 			
-			try:
-				self.connect()
-			except Exception as e:
-				print(e)
-				self.disconnect()
+				#Creating daemon so the chat can access this object.
+				self.daemon = Pyro4.Daemon()
+
+				try:
+					self.disconnect()
+					self.daemon.unregister(self)
+				except Exception as e:
+					print(e)
+			
+
+				try:
+					self._my_uri = self.daemon.register(self)		
+				except Exception as e:
+					print('primeiro except:',e)
+					self.daemon.unregister(self)
+					self._my_uri = self.daemon.register(self)
+
+				
+				try:
+					self.connect()
+				except Exception as e:
+					print(e)
+					self.disconnect()
+				
+				ativo = True
+				self.checkban(usuario)
 		elif comando == 'nok':
 			self.ui.label_warning.setText("Senha ou usuario incorreto tente novamente")
 		elif comando == 'ban':
 			self.ui.label_warning.setText("Você está Banido ! Flw")
 	
-	@threaded
-	def checkban(self,user):
-		global ativo 
-		while ativo:
-			time.sleep(3)
-			sock = connect_tcp(self.server, self.port)
-			msg = 'toban:'+user
-			print('Enviou checkban')
-			sock.send(msg.encode('utf-8') )
-			resp= sock.recv(1024).decode('utf-8')
-			print(resp)
-			if resp == 'ban':
-				self.logout()
-			
-
-
-
+		
 	def proxima_page(self):
-		self.ui.stackedWidget.setCurrentIndex(3)
+		self.ui.stackedWidget.setCurrentIndex(4)
         # 2 seja bem vindo
         # 1 regitro
 	def voltar_page(self):
@@ -348,17 +366,15 @@ class User():
 			self.ui.label_warning_create.setText("Esse Usuario já existe faça login !")
 	
 	def logout(self):
-		global ativo
-		ativo = False
-		self.ui.stackedWidget.setCurrentIndex(3) # return for login
-		try:
+		self.ui.stackedWidget.setCurrentIndex(4) # return for login
+		'''try:
 			self.disconnect()
-		except:
-			return 0
+		except Exception as e:
+			print(e)
 		self.daemon.unregister(self)
 		del self.daemon
 		del self.chat
-		del self._my_uri
+		del self._my_uri'''
 		
 	'''Funções para transferência de arquivos'''
 	def enviar_arquivo(self):
@@ -438,6 +454,21 @@ class User():
 			os.system('explorer '+ os.path.dirname(filename))
 		else:
 			os.system('thunar '+ os.path.dirname(filename))
+	@threaded
+	def checkban(self,user):
+		global ativo,usuario_instance
+		while ativo:
+			time.sleep(3)
+			#sock = connect_tcp(self.server, self.port)
+			msg = '___toban,'+user
+			self.chat.send_message(msg, self.my_uri)
+			#print('Enviou checkban:',msg)
+			'''sock.send(msg.encode('utf-8') )
+			resp= sock.recv(1024).decode('utf-8')
+			print(resp)
+			if resp == 'ban':
+				self.logout()'''
 
 if __name__ == '__main__':
-	User()
+
+	usuario_instance=User()
