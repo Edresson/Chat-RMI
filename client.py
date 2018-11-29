@@ -107,8 +107,12 @@ class User():
                 self.ui.stackedWidget.setCurrentIndex(4)
 
 	def createprivatechat(self):
-		user=str(self.ui.listconectados.currentItem().text())
-		self.createchat('_'+self.username+'_'+user,user)
+		try:
+			user=str(self.ui.listconectados.currentItem().text())
+			self.createchat('_'+self.username+'_'+user,user)
+		except:
+			pass
+		
 
 	def createchat(self,chatname,user):
 		sock = connect_tcp(self.server, self.port)
@@ -410,7 +414,7 @@ class User():
 		comando = comando.replace('\r\n\r\n','')
 		if comando == 'ok':
 			os.mkdir(os.path.join(Download_dir,usuario))
-			self.ui.stackedWidget.setCurrentIndex(3) # return for login
+			self.ui.stackedWidget.setCurrentIndex(4) # return for login
 		elif comando == 'nok':
 			self.ui.label_warning_create.setText("Esse Usuario já existe faça login !")
 	
